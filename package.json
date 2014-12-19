@@ -1,0 +1,12 @@
+{
+  "name": "NodeChallengeChatApp",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node chat.js"
+  },
+  "dependencies": {
+    "express": "^4.10.6",
+    "socket.io": "^1.2.1"
+  }
+}
