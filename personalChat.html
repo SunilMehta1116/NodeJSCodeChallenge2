@@ -1,0 +1,90 @@
+<html>
+<title>Chatter</title>
+
+<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+
+
+
+<head>
+
+
+ <style>
+    { margin: 0; padding: 0; box-sizing: border-box; }
+	      body { font: 13px Helvetica, Arial; }
+	form { background: #968B8B; padding: 3px; position: fixed; bottom: 0; width: 100%; }
+    form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }	
+	form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
+      #messages { list-style-type: none; margin: 0; padding: 0; }	
+      #messages li { padding: 5px 10px; }
+      #messages li:nth-child(odd) { background: #eee; }	  
+    </style>
+</head>
+
+	<body>
+	<div style="display: inline-flex;width:100%">
+		
+		<div id="chatRoom" style="display: block;width:100%">
+			<div style='overflow:scroll; width:100%;height:100%;'>
+				<ul id="messages">
+				</ul>
+			</div>
+			<form action="">
+					<h3>Chat Room</h3>
+					<div></div>
+
+					<input id="t" autocomplete="off" ></input>
+					<button>Send</button>
+			</form>
+		</div>
+	</div>
+	</body>
+	
+<script>
+var chatterName;
+	//$(document).ready(function(){
+	//	$('#t').attr('disabled','true')
+	//});
+	var socket = io();
+	$('form').submit(function(){
+		socket.emit('cm',chatterName+': ' + $('#t').val());
+		$('#t').val('');
+		return false
+	});
+	socket.on('cm',function(msg){
+		$('#messages').append($('<li>').text(msg));
+	});
+	
+	
+	var chatterNameSet = function(){
+		chatterName =	$('#chatter').val();
+	//	if(chatterName != null && chatterName != ''){
+		
+	//	$('#chatter').attr('disabled','true');
+	//	$('#startChat').attr('disabled','true');
+		
+		
+	//	$('#t').removeAttr('disabled');
+		
+		socket.emit('ul',chatterName);
+		
+		console.log(chatterName); //just logging
+	//	}
+	}
+	
+	
+	
+	
+
+	
+	window.onbeforeunload = closingCode;
+	function closingCode(){
+		console.log(user);
+		socket.emit('depart',user);
+		 alert("confirm exit is being called");
+    return false;
+}
+
+	
+</script>
+</html>

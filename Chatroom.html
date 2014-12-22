@@ -3,42 +3,147 @@
 
 <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
 <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+
+
+
 <head>
 
 
  <style>
-      * { margin: 0; padding: 0; box-sizing: border-box; }
-      body { font: 13px Helvetica, Arial; }
-      form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
-      form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
-      form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
-      #messages { list-style-type: none; margin: 0; padding: 0; }
+    { margin: 0; padding: 0; box-sizing: border-box; }
+	      body { font: 13px Helvetica, Arial; }
+	form { background: #968B8B; padding: 3px; position: fixed; bottom: 0; width: 50%; }
+    form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }	
+	form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
+      #messages { list-style-type: none; margin: 0; padding: 0; }	
       #messages li { padding: 5px 10px; }
-      #messages li:nth-child(odd) { background: #eee; }
+      #messages li:nth-child(odd) { background: #eee; }	  
     </style>
 </head>
 
 	<body>
-	<ul id="messages">
-	</ul>
-	<form action="">
-			<h3>Chat Room</h3>
-			<div></div>
+	<div style="display: inline-flex;width:100%">
+		
+		<div id="chatRoom" style="display: block;width:50%">
+			<div style='overflow:scroll; width:110%;height:500px;'>
+				<ul id="messages">
+				</ul>
+			</div>
+			<form action="">
+					<h3>Chat Room</h3>
+					<div></div>
 
-			<input id="t" autocomplete="off" ></input>
-			<button>Send</button>
-	</form>
+					<input id="t" autocomplete="off" ></input>
+					<button>Send</button>
+			</form>
+		</div>
+		<div id="Chatlogin" style="display: block;width:50%;padding-left: 100px;">
+			<table border=0>
+				<tr>
+					<td><strong>Chat Login:</strong></td>
+				</tr>
+				<tr>
+					<td><span>Please enter your name here and press enter button below to enter group chat</span></td>
+				</tr>
+				<tr>
+					<td><input id='chatter' type="text" ></input></td>
+				</tr>
+				<tr>
+					<td><input type="button" id="startChat" onclick="chatterNameSet()" value="ENTER"></input></td>
+				</tr>
+				<tr><td>
+				
+				<hr>
+					<select id="uslist" size="15" style="width: 100%">
+					</select>	
+					
+				</td></tr>
+				<tr><td>
+				<input type="button" Id="pvtChtLink" onclick="privateChat()"  value="Enter Private Chat Room"></a>
+				</td></tr>
+			</table>
+			
+		</div>
+	</div>
 	</body>
 	
 <script>
+var chatterName;
+	$(document).ready(function(){
+		$('#t').attr('disabled','true')
+		$('#pvtChtLink').attr('disabled','true');
+	});
 	var socket = io();
 	$('form').submit(function(){
-		socket.emit('cm',$('#t').val());
+		socket.emit('cm',chatterName+': ' + $('#t').val());
 		$('#t').val('');
 		return false
 	});
 	socket.on('cm',function(msg){
 		$('#messages').append($('<li>').text(msg));
 	});
+	
+	
+	var chatterNameSet = function(){
+		chatterName =	$('#chatter').val();
+		if(chatterName != null && chatterName != ''){
+		
+		$('#chatter').attr('disabled','true');
+		$('#startChat').attr('disabled','true');
+		
+		
+		$('#pvtChtLink').removeAttr('disabled');;
+		$('#t').removeAttr('disabled');
+		
+		socket.emit('ul',chatterName);
+		
+		console.log(chatterName); //just logging
+		}
+	}
+	
+	//functinoality of showing list of members
+	socket.on('ul',function(userList){
+		
+		console.log(userList.length);
+		resetOptions();
+		for(var i=0,j=userList.length;i<j;i++){
+			addOption(userList[i],userList[i]);
+		}
+	});
+	
+	
+	var resetOptions = function(){
+		console.log($('#uslist'));
+		//for(var i=0,j=$('#uslist').length;i<j;i++){
+			$('#uslist').html('');
+		//}
+	}
+	
+	//function to add members
+	var addOption = function (text,value ){
+		//console.log(selectbox);
+		var optn = document.createElement("OPTION");
+		//console.log(optn);
+		optn.text = text;
+		optn.value = value;
+		$('#uslist').append(optn);
+		//selectbox.options.add(optn);
+	}
+	
+
+	
+	window.onbeforeunload = closingCode;
+	function closingCode(){
+		console.log(user);
+		socket.emit('depart',user);
+		 alert("confirm exit is being called");
+    return false;
+}
+
+var privateChat = function(){
+	window.open('http://localhost:1335/personalChat','1419252499839','width=700,height=500,toolbar=0,menubar=0,location=0,status=0,scrollbars=1,resizable=0,left=0,top=0');
+	
+}
+	
 </script>
 </html>
