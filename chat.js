@@ -6,6 +6,7 @@ var express = require('express'),
 	
 	
 var userList = [];
+var socketList = [];
 app.get('/',function(req,res){
 	//res.sendFile(filePath);
 	res.sendfile('Chatroom.html');
@@ -19,18 +20,20 @@ app.get('/personalChat',function(req,res){
 
 io.on('connection',function(socket){
 	
+	socketList.push(socket);
 
-	console.log('a user has connected');	
-	
 		socket.on('cm',function(msg){
-		
-		
+		//var user = msg.split(':')[0];	
+		//socket.user = user;
 		//message emitting
 		io.emit('cm',msg);
 		//console.log(msg);
 	});
 	
 	socket.on('ul',function(user){
+		
+		console.log(user + ': user has connected');	
+		socket.user = user;
 		console.log(userList);
 		//if(userList.indexOf(user) == -1){
 			userList.push(user);
@@ -54,7 +57,13 @@ io.on('connection',function(socket){
 	//	if(userList.indexOf(user) != -1){
 	//		userList.splice(userList.indexOf(user,1));
 	//	}
-		console.log(user + ':  user has disconnected');
+		if(userList.indexOf(socket.user) != -1){
+		userList.splice(userList.indexOf(socket.user,1));
+		}
+		var i = socketList.indexOf(socket);
+		delete socketList[i];
+	
+		console.log(socket.user + ':  user has disconnected');
 	});
 	
 	
