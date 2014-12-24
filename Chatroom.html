@@ -62,7 +62,11 @@
 				<input type="button" Id="pvtChtLink" onclick="privateChat()"  value="Enter Private Chat Room"></a>
 				</td></tr>
 			</table>
-			
+			<div style='overflow:scroll; width:100%;height:200px;'>
+				<div id="rqsterDiv" style="display: none">
+					<strong>User '<span id="rqster"  ></Span>' want to chat with you in pvt. Do you agree ?<a href="javascript:openPvtChat()" >Yes</a>&nbsp;<a href="javascript:DenyPvtChat()" >No</a></strong>
+				<div>
+			</div>
 		</div>
 	</div>
 	</body>
@@ -81,6 +85,14 @@ var chatterName;
 	});
 	socket.on('cm',function(msg){
 		$('#messages').append($('<li>').text(msg));
+	});
+
+var reqMem;	
+	socket.on('pmReq',function(requester){
+	console.log('PM Message:' + requester);
+	reqMem = requester;
+		$('#rqster').text(requester);
+		$('#rqsterDiv').show();
 	});
 	
 	
@@ -132,18 +144,23 @@ var chatterName;
 	
 
 	
-	window.onbeforeunload = closingCode;
-	function closingCode(){
-		console.log(user);
-		socket.emit('depart',user);
-		 alert("confirm exit is being called");
-    return false;
-}
+
 
 var privateChat = function(){
-	window.open('http://localhost:1335/personalChat','1419252499839','width=700,height=500,toolbar=0,menubar=0,location=0,status=0,scrollbars=1,resizable=0,left=0,top=0');
+	var requestedUser = $('#uslist').val();
+	console.log(requestedUser);
+	socket.emit('pmReq',requestedUser);
+	window.open('http://localhost:1335/personalChat/?chatMan='+requestedUser,'1419252499839','width=700,height=500,toolbar=0,menubar=0,location=0,status=0,scrollbars=1,resizable=0,left=0,top=0');
 	
 }
+
+var openPvtChat = function(){
+	socket.emit('pmReq','accepted-'+reqMem);
+}
+var DenyPvtChat = function(){
+	socket.emit('pmReq','denied-'+ reqMem);
+}
+
 	
 </script>
 </html>

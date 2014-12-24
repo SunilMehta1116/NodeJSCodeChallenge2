@@ -42,48 +42,26 @@
 	
 <script>
 var chatterName;
-	//$(document).ready(function(){
-	//	$('#t').attr('disabled','true')
-	//});
+
 	var socket = io();
+	
 	$('form').submit(function(){
 		socket.emit('cm',chatterName+': ' + $('#t').val());
 		$('#t').val('');
 		return false
 	});
+	
 	socket.on('cm',function(msg){
 		$('#messages').append($('<li>').text(msg));
 	});
 	
 	
 	var chatterNameSet = function(){
-		chatterName =	$('#chatter').val();
-	//	if(chatterName != null && chatterName != ''){
-		
-	//	$('#chatter').attr('disabled','true');
-	//	$('#startChat').attr('disabled','true');
-		
-		
-	//	$('#t').removeAttr('disabled');
-		
-		socket.emit('ul',chatterName);
-		
-		console.log(chatterName); //just logging
-	//	}
+			chatterName =	$('#chatter').val();
+			socket.emit('ul',chatterName);
+			console.log(chatterName); //just logging
 	}
 	
-	
-	
-	
-
-	
-	window.onbeforeunload = closingCode;
-	function closingCode(){
-		console.log(user);
-		socket.emit('depart',user);
-		 alert("confirm exit is being called");
-    return false;
-}
 
 	
 </script>
